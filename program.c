@@ -42,6 +42,7 @@ void display_team_stats();
 void calculate_team_goals_scored();
 void calculate_team_goals_conceded();
 void calculate_goal_difference();
+int compare();
 //unsigned int hash();
 //int line_numbers_in_file();
 
@@ -111,6 +112,7 @@ void calculate_team_stats(Match *match, Team *team)
     calculate_team_goals_scored(match, team);
     calculate_team_goals_conceded(match, team);
     calculate_goal_difference(team);
+    qsort(team, AMOUNT_OF_TEAMS, sizeof(Team), compare);
 }
 
 void set_name(Team *team)
@@ -208,6 +210,19 @@ void display_team_stats(Team *team)
         printf("\n%4s   %6d   %12d   %14d   %10d", team[i].name, team[i].points, team[i].goals_scored, team[i].goals_conceded, team[i].difference);
     }
     printf("\n");
+}
+
+int compare(const void *a, const void *b){
+    Team *team1 = (Team *) a;
+    Team *team2 = (Team *) b;
+
+    int result = team2->points - team1->points;
+
+    if (team1->points == team2->points)
+    {
+        result = team2->difference - team1->difference;
+    }
+    return result;
 }
 
 /*unsigned int hash(char *team_name){
