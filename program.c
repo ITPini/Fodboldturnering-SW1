@@ -36,12 +36,10 @@ typedef struct
 void read_matches_from_file();
 void display_matches();
 void calculate_team_stats();
-void set_name();
-void calculate_team_points();
+int calculate_team_points();
 void display_team_stats();
-void calculate_team_goals_scored();
-void calculate_team_goals_conceded();
-void calculate_goal_difference();
+int calculate_team_goals_scored();
+int calculate_team_goals_conceded();
 int compare();
 //unsigned int hash();
 //int line_numbers_in_file();
@@ -110,74 +108,66 @@ void calculate_team_stats(Match *match, Team *team, int n)
     char team_name[][4] = {"SDR", "FCM", "ACH", "RFC", "LBK", "AaB", "BIF", "FCN", "OB", "FCK", "AGF", "VB"};
     for (int i = 0; i < AMOUNT_OF_TEAMS; i++)
     {
-        set_name(team, team_name[i], i);
-        calculate_team_points(match, team, i);
-        calculate_team_goals_scored(match, team, i);
-        calculate_team_goals_conceded(match, team, i);
-        calculate_goal_difference(team, i);
+        strcpy(team[i].name, team_name[i]);
+        team[i].points = calculate_team_points(match, team, i);
+        team[i].goals_scored = calculate_team_goals_scored(match, team, i);
+        team[i].goals_conceded = calculate_team_goals_conceded(match, team, i);
+        team[i].difference = team[i].goals_scored - team[i].goals_conceded;
     }
     qsort(team, AMOUNT_OF_TEAMS, sizeof(Team), compare);
 }
 
-void set_name(Team *team, char *team_name, int n)
+int calculate_team_points(Match *match, Team *team, int n)
 {
-    strcpy(team[n].name, team_name);
-}
-
-void calculate_team_points(Match *match, Team *team, int n)
-{
-    team[n].points = 0;
+    int points = 0;
     for (int i = 0; i < AMOUNT_OF_MATCHES; i++)
     {
         if ((!strcmp(team[n].name, match[i].team_1) && match[i].goal_1 > match[i].goal_2) ||
             (!strcmp(team[n].name, match[i].team_2) && match[i].goal_2 > match[i].goal_1))
         {
-            team[n].points += 3;
+            points += 3;
         } 
         else if ((!strcmp(team[n].name, match[i].team_1) && match[i].goal_1 == match[i].goal_2) ||
                  (!strcmp(team[n].name, match[i].team_2) && match[i].goal_2 == match[i].goal_1))
         {
-            team[n].points += 1;   
+            points += 1;   
         }
     }
+    return points;
 }
 
-void calculate_team_goals_scored(Match *match, Team *team, int n)
+int calculate_team_goals_scored(Match *match, Team *team, int n)
 {
-    team[n].goals_scored = 0;
+    int scored = 0;
     for (int i = 0; i < AMOUNT_OF_MATCHES; i++)
     {
         if (!strcmp(team[n].name, match[i].team_1))
         {
-            team[n].goals_scored += match[i].goal_1;
+            scored += match[i].goal_1;
         }
         else if (!strcmp(team[n].name, match[i].team_2))
         {
-            team[n].goals_scored += match[i].goal_2;
+            scored += match[i].goal_2;
         }
     }
+    return scored;
 }
 
-void calculate_team_goals_conceded(Match *match, Team *team, int n)
+int calculate_team_goals_conceded(Match *match, Team *team, int n)
 {
-    team[n].goals_conceded = 0;
+    int conceded = 0;
     for (int i = 0; i < AMOUNT_OF_MATCHES; i++)
     {
         if (!strcmp(team[n].name, match[i].team_1))
         {
-            team[n].goals_conceded += match[i].goal_2;
+            conceded += match[i].goal_2;
         }
         else if (!strcmp(team[n].name, match[i].team_2))
         {
-            team[n].goals_conceded += match[i].goal_1;
+            conceded += match[i].goal_1;
         }
     }
-}
-
-void calculate_goal_difference(Team *team, int n)
-{
-    team[n].difference = 0;
-    team[n].difference = team[n].goals_scored - team[n].goals_conceded;
+    return conceded;
 }
 
 void display_team_stats(Team *team)
