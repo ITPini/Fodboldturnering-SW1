@@ -147,6 +147,7 @@ int compare(const void *a, const void *b){
 
     int result = team2->points - team1->points;
 
+    /* Compare difference if points is same */
     if (team1->points == team2->points)
     {
         result = team2->difference - team1->difference;
