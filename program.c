@@ -33,16 +33,13 @@ typedef struct
     int difference;
 } Team;
 
-void read_matches_from_file();
-void display_matches();
-void calculate_team_stats();
-int calculate_team_points();
-void display_team_stats();
-int calculate_team_goals_scored();
-int calculate_team_goals_conceded();
-int compare();
-//unsigned int hash();
-//int line_numbers_in_file();
+void read_matches_from_file(Match match[]);
+void calculate_team_stats(Match *match, Team *team);
+int calculate_team_points(Match *match, Team *team, int n);
+int calculate_team_goals_scored(Match *match, Team *team, int n);
+int calculate_team_goals_conceded(Match *match, Team *team, int n);
+int compare(const void *a, const void *b);
+void display_team_stats(Team *team);
 
 int main()
 {
@@ -56,22 +53,6 @@ int main()
     return 0;
 }
 
-/*int line_numbers_in_file(){
-    int count = 0;
-    char c;
-    FILE *fp = fopen(PATH_TO_FILE, "r");
-
-    if(fp){
-        while(c != EOF){
-            c = getc(fp);
-            if (c == '\n'){
-                count++;
-            }
-        }
-    }
-    printf("Lines: %d", count + 1);
-    return count + 1;
-}*/
 void read_matches_from_file(Match match[])
 {
     FILE *fp = fopen(PATH_TO_FILE, "r");
@@ -93,17 +74,7 @@ void read_matches_from_file(Match match[])
     }
 }
 
-void display_matches(Match *match)
-{
-    for (int i = 0; i < AMOUNT_OF_MATCHES; i++)
-    {
-        printf("\n%s     %s %s     %-3s - %-3s     %2d - %-2d     %d",
-               match[i].day, match[i].date, match[i].time, match[i].team_1, match[i].team_2,
-               match[i].goal_1, match[i].goal_2, match[i].spectator_count);
-    }
-}
-
-void calculate_team_stats(Match *match, Team *team, int n)
+void calculate_team_stats(Match *match, Team *team)
 {
     char team_name[][4] = {"SDR", "FCM", "ACH", "RFC", "LBK", "AaB", "BIF", "FCN", "OB", "FCK", "AGF", "VB"};
     for (int i = 0; i < AMOUNT_OF_TEAMS; i++)
@@ -170,18 +141,6 @@ int calculate_team_goals_conceded(Match *match, Team *team, int n)
     return conceded;
 }
 
-void display_team_stats(Team *team)
-{
-    printf("\nTEAM | POINTS | GOALS SCORED | GOALS CONCEDED | DIFFERENCE\n");
-
-    for (int i = 0; i < AMOUNT_OF_TEAMS; i++)
-    {
-        //printf("\n%s: %d", team[i].name, hash(team[i].name));
-        printf("\n%4s   %6d   %12d   %14d   %10d", team[i].name, team[i].points, team[i].goals_scored, team[i].goals_conceded, team[i].difference);
-    }
-    printf("\n");
-}
-
 int compare(const void *a, const void *b){
     Team *team1 = (Team *) a;
     Team *team2 = (Team *) b;
@@ -195,12 +154,13 @@ int compare(const void *a, const void *b){
     return result;
 }
 
-/*unsigned int hash(char *team_name){
-    int length = strnlen(team_name, 4);
-    unsigned int value = 0;
-    for (int i = 0; i < length; i++)
+void display_team_stats(Team *team)
+{
+    printf("\nTEAM | POINTS | GOALS SCORED | GOALS CONCEDED | DIFFERENCE\n");
+
+    for (int i = 0; i < AMOUNT_OF_TEAMS; i++)
     {
-        value += team_name[i];
+        printf("\n%4s   %6d   %12d   %14d   %10d", team[i].name, team[i].points, team[i].goals_scored, team[i].goals_conceded, team[i].difference);
     }
-    return value % 100;
-}*/
+    printf("\n");
+}
